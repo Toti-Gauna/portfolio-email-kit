@@ -2,7 +2,7 @@ Subject: {{ROLE}} - Senior AI Fullstack Engineer (RAG in production)
 
 Hi {{FIRST_NAME}},
 
-I saw that {{COMPANY}} is hiring a {{ROLE}}. {{WHY_YOU}}
+I'm applying for the {{ROLE}} role at {{COMPANY}}. {{WHY_YOU}}
 
 I build AI products end to end with {{STACK}}, from the first prototype to production. My CV is attached.
 
