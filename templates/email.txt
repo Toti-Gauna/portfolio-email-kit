@@ -1,0 +1,18 @@
+Subject: {{ROLE}} - Senior AI Fullstack Engineer (RAG in production)
+
+Hi {{FIRST_NAME}},
+
+I saw that {{COMPANY}} is hiring a {{ROLE}}. {{WHY_YOU}}
+
+I build AI products end to end with {{STACK}}, from the first prototype to production. My CV is attached.
+
+- CompliA (Tsoft, 2026): RAG assistant for a telecom's compliance portal, used company-wide. Python microservice, LLM integrations, historical data digitization.
+- Payments & gamification (Tuenti, 2024-2026): payment modules, component system, referral program and benefits wheel. Fullstack, through CI/CD.
+
+If it fits, I'd love a 20-minute call. I'm flexible with time zones and can start soon.
+
+Ignacio Gauna
+Senior AI Fullstack Engineer | Argentina | Remote | English C1
+LinkedIn: https://www.linkedin.com/in/ignacio-emanuel-gauna
+GitHub: https://github.com/Toti-Gauna
+Portfolio: https://toti-gauna.github.io/portafolio-2026
