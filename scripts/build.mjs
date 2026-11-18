@@ -18,6 +18,8 @@ rmSync("dist", { recursive: true, force: true });
 mkdirSync("dist/emails", { recursive: true });
 cpSync("site/index.html", "dist/index.html");
 cpSync("site/tracker.html", "dist/tracker.html");
+cpSync("site/startups.html", "dist/startups.html");
+cpSync("data/startups.json", "dist/startups.json");
 writeFileSync("dist/template.html", html);
 writeFileSync("dist/template.txt", txt);
 

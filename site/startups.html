@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Startups · Ignacio Gauna</title>
+<style>
+*{box-sizing:border-box}body{margin:0 auto;background:#0a0a0a;color:#efe9df;font:15px Helvetica,Arial,sans-serif;padding:18px;max-width:760px}
+h1{font:900 24px 'Arial Black',Arial;margin:0}h1 span,a{color:#ff4d1f}a{text-decoration:none}
+.mono,.tag,small{font-family:ui-monospace,Menlo,monospace}
+.top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+small{color:#7d7a74;font-size:11px;line-height:16px;display:block;margin-bottom:12px}
+.f{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.f button{background:transparent;border:1px solid #3a3a3a;color:#efe9df;padding:7px 10px;font:11px ui-monospace,monospace;cursor:pointer}.f button.on{background:#ff4d1f;border-color:#ff4d1f;color:#0a0a0a;font-weight:bold}
+.c{background:#111;border-top:2px solid #ff4d1f;padding:14px;margin-bottom:10px}.c.b{border-top-color:#555}
+.c h3{margin:0 0 3px;font-size:16px}.c .r{color:#c9c4ba;font-size:14px;margin-bottom:8px}
+.tag{display:inline-block;border:1px solid #333;padding:2px 6px;font-size:10px;margin:0 5px 5px 0;text-transform:uppercase;letter-spacing:1px;color:#c9c4ba}
+.tag.pay{border-color:#ff4d1f;color:#ff4d1f}.m{color:#8a8a85;font-size:12px;line-height:18px;margin:4px 0}
+.acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.btn{display:inline-block;padding:8px 12px;font:bold 12px ui-monospace,monospace;background:#ff4d1f;color:#0a0a0a}.btn.alt{background:transparent;border:1px solid #3a3a3a;color:#efe9df}
+</style></head><body>
+<div class="top"><h1>Startups<span>.</span></h1><span class="mono" style="font-size:11px"><a href="tracker.html">Tracker</a> · <a href="index.html">Composer</a></span></div>
+<small id="meta"></small>
+<div class="f" id="f"></div><div id="list"></div>
+<script>
+let D=[],flt="all";const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const F=[["all","Todas"],["A","Prioridad A"],["B","B: worldwide"],["Fullstack","Fullstack"],["Backend","Backend"],["Frontend","Frontend"]];
+function render(){
+ $f.innerHTML=F.map(([k,l])=>`<button class="${k===flt?"on":""}" data-k="${k}">${l}</button>`).join("");
+ const l=D.filter(x=>flt==="all"||x.tier===flt||x.cv===flt);
+ $l.innerHTML=l.map(x=>{const q=new URLSearchParams({company:x.company,role:x.role,link:x.link,stack:x.stack||"",channel:"startup",cv:x.cv});
+ return `<div class="c ${x.tier==="B"?"b":""}"><h3>${esc(x.company)}</h3><div class="r">${esc(x.role)}</div>
+ <span class="tag pay">${esc(x.pay)}</span><span class="tag">${esc(x.cv)} CV</span><span class="tag">${esc(x.region)}</span>
+ ${x.what&&x.what!=="—"?`<div class="m">${esc(x.what)}</div>`:""}${x.stack?`<div class="m">Stack: ${esc(x.stack)}</div>`:""}
+ <div class="m">${x.posted&&x.posted!=="—"?esc(x.posted)+" · ":""}${esc(x.verified)}</div>${x.note?`<div class="m">${esc(x.note)}</div>`:""}
+ <div class="acts"><a class="btn" href="${esc(x.link)}" target="_blank" rel="noopener">Ver oferta</a><a class="btn alt" href="tracker.html?${q}">Cargar en tracker</a></div></div>`}).join("")}
+const $f=document.getElementById("f"),$l=document.getElementById("list");
+document.addEventListener("click",e=>{if(e.target.dataset.k){flt=e.target.dataset.k;render()}});
+fetch("startups.json").then(r=>r.json()).then(d=>{D=d.items;document.getElementById("meta").textContent="Actualizado "+d.updated+". Verificá que cada oferta siga abierta antes de postular; las de prioridad B dicen 'worldwide' pero confirmá que paguen a Argentina.";render()});
+</script></body></html>

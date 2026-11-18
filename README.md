@@ -9,6 +9,8 @@ Plantilla de email (estética del portfolio) + generador + hosting de imágenes 
 
 - `site/tracker.html`: **tracker** de postulaciones (contador diario vs meta de 15, follow-ups a los 6 días, exportar CSV / `applications.json`, backup). Cada fila tiene un botón *Email* que abre el composer con los datos ya cargados.
 
+- `site/startups.html` + `data/startups.json`: lista de startups contratando (remoto, abiertas a Argentina), con botón *Cargar en tracker*.
+
 ## Uso diario
 1. Abrí `https://toti-gauna.github.io/portfolio-email-kit/`.
 2. Completá empresa, puesto, nombre, stack y una frase de por qué ellos.

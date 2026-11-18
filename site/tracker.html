@@ -25,7 +25,7 @@ button.sm{padding:6px 9px;font-size:11px}
 .empty{color:#7d7a74;padding:14px;border:1px dashed #333;font-size:13px}
 #msg{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#ff4d1f;color:#0a0a0a;padding:8px 14px;font:12px ui-monospace,monospace;display:none}
 </style></head><body>
-<div class="top"><h1>Tracker<span>.</span></h1><span class="mono" style="font-size:11px"><a href="index.html">Composer</a></span></div>
+<div class="top"><h1>Tracker<span>.</span></h1><span class="mono" style="font-size:11px"><a href="startups.html">Startups</a> · <a href="index.html">Composer</a></span></div>
 
 <div class="card"><small style="margin-top:0">Hoy · <span id="today"></span></small>
 <div class="big"><b id="cnt">0</b> <span>/ <span id="goal">15</span></span></div>
@@ -112,4 +112,5 @@ $("bk").onclick=()=>dl("tracker-backup-"+today()+".json",JSON.stringify(apps,nul
 $("rs").onclick=()=>$("file").click();
 $("file").onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;apps=d;save();render();say("Restaurado: "+d.length)}catch(x){say("Archivo inválido")}};r.readAsText(e.target.files[0])};
 render();
+const qp=new URLSearchParams(location.search);["company","role","link","stack","notes","channel","cv"].forEach(k=>{if(qp.get(k))$(k).value=qp.get(k)});
 </script></body></html>
