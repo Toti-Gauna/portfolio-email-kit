@@ -13,7 +13,7 @@ main{padding:24px;background:#050505}iframe{width:100%;max-width:640px;height:15
 #msg{color:#ff4d1f;font:12px ui-monospace,monospace;margin-top:10px;min-height:16px}
 @media(max-width:800px){.wrap{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid #262626}}
 </style></head><body><div class="wrap"><aside>
-<h1>Email Kit</h1><small>Completá, mirá y copiá</small>
+<h1>Email Kit</h1><div style="margin-top:6px"><a href="tracker.html" style="color:#ff4d1f;font:12px ui-monospace,monospace">→ Tracker</a></div><small>Completá, mirá y copiá</small>
 <label>Company</label><input id="company" value="Acme AI">
 <label>Role</label><input id="role" value="Senior AI Engineer">
 <label>First name</label><input id="first_name" value="Sarah">
@@ -37,6 +37,7 @@ $("cHtml").onclick=()=>copy(html(),"HTML copiado");
 $("cTxt").onclick=()=>copy(txt(),"Texto copiado");
 $("cSub").onclick=()=>copy(subject(),"Asunto copiado");
 $("cRich").onclick=async()=>{const h=html();try{await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([h],{type:"text/html"}),"text/plain":new Blob([txt()],{type:"text/plain"})})]);say("Copiado: pegalo en el redactor de Gmail")}catch(e){say("Tu navegador no permite copiar rico: usá Copy HTML")}};
+const q=new URLSearchParams(location.search);F.forEach(f=>{if(q.get(f))$(f).value=q.get(f)});
 F.forEach(f=>$(f).addEventListener("input",render));
 Promise.all([fetch("template.html").then(r=>r.text()),fetch("template.txt").then(r=>r.text())]).then(([a,b])=>{H=a;T=b;render()});
 </script></body></html>

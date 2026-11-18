@@ -17,6 +17,7 @@ const apps = JSON.parse(readFileSync("data/applications.json", "utf8"));
 rmSync("dist", { recursive: true, force: true });
 mkdirSync("dist/emails", { recursive: true });
 cpSync("site/index.html", "dist/index.html");
+cpSync("site/tracker.html", "dist/tracker.html");
 writeFileSync("dist/template.html", html);
 writeFileSync("dist/template.txt", txt);
 

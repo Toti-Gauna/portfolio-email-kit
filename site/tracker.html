@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracker · Ignacio Gauna</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0a0a0a;color:#efe9df;font:15px Helvetica,Arial,sans-serif;padding:18px;max-width:760px;margin:auto}
+h1{font:900 24px 'Arial Black',Arial;margin:0}h1 span{color:#ff4d1f}
+.mono,small,label,.tag,.btn{font-family:ui-monospace,Menlo,monospace}
+small,label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#7d7a74;display:block;margin:12px 0 5px}
+a{color:#ff4d1f;text-decoration:none}
+.top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.card{background:#111;border-top:2px solid #ff4d1f;padding:16px;margin-bottom:14px}
+.big{font:900 44px 'Arial Black',Arial;line-height:1}.big span{color:#7d7a74;font-size:24px}
+.bar{height:6px;background:#222;margin:12px 0}.bar i{display:block;height:100%;background:#ff4d1f;width:0}
+.blocks{display:flex;gap:8px;flex-wrap:wrap}.blk{flex:1;min-width:100px;border:1px solid #2a2a2a;padding:8px 10px}
+.blk b{display:block;font:900 20px 'Arial Black',Arial}.blk small{margin:2px 0 0}
+input,select,textarea{width:100%;background:#0a0a0a;border:1px solid #333;color:#efe9df;padding:10px;font:14px inherit;border-radius:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button,.btn{background:#ff4d1f;color:#0a0a0a;border:0;font-weight:bold;padding:10px 14px;cursor:pointer;font-size:12px;display:inline-block}
+button.alt,.btn.alt{background:transparent;border:1px solid #3a3a3a;color:#efe9df}
+button.sm{padding:6px 9px;font-size:11px}
+.item{border:1px solid #232323;padding:12px;margin-bottom:8px;background:#0e0e0e}
+.item.due{border-color:#ff4d1f}.item h3{margin:0 0 4px;font-size:15px}.item .meta{color:#8a8a85;font-size:12px;margin-bottom:8px}
+.tag{display:inline-block;border:1px solid #333;padding:2px 6px;font-size:10px;margin-right:5px;text-transform:uppercase;letter-spacing:1px;color:#c9c4ba}
+.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}.acts select{width:auto;padding:6px}
+.h2{display:flex;justify-content:space-between;align-items:center;margin:20px 0 8px}
+.empty{color:#7d7a74;padding:14px;border:1px dashed #333;font-size:13px}
+#msg{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#ff4d1f;color:#0a0a0a;padding:8px 14px;font:12px ui-monospace,monospace;display:none}
+</style></head><body>
+<div class="top"><h1>Tracker<span>.</span></h1><span class="mono" style="font-size:11px"><a href="index.html">Composer</a></span></div>
+
+<div class="card"><small style="margin-top:0">Hoy · <span id="today"></span></small>
+<div class="big"><b id="cnt">0</b> <span>/ <span id="goal">15</span></span></div>
+<div class="bar"><i id="fill"></i></div>
+<div class="blocks" id="blocks"></div></div>
+
+<div id="dueWrap" style="display:none"><div class="h2"><small style="margin:0">Follow-ups para hoy</small></div><div id="due"></div></div>
+
+<details open class="card" style="border-top-color:#efe9df"><summary class="mono" style="cursor:pointer;font-size:12px;letter-spacing:1.5px;text-transform:uppercase">+ Nueva postulación</summary>
+<form id="f">
+<div class="row"><div><label>Empresa*</label><input id="company" required></div><div><label>Puesto*</label><input id="role" required></div></div>
+<div class="row"><div><label>Canal</label><select id="channel"><option value="easy">Easy Apply</option><option value="email">Email a HR head</option><option value="startup">Startup</option></select></div>
+<div><label>CV usado</label><select id="cv"><option>Fullstack</option><option>Backend</option><option>Frontend</option></select></div></div>
+<label>Link de la oferta</label><input id="link" type="url" placeholder="https://...">
+<div class="row"><div><label>Contacto (nombre)</label><input id="contact"></div><div><label>Contacto (email o LinkedIn)</label><input id="contact_email"></div></div>
+<label>Stack de la oferta</label><input id="stack" placeholder="React, Node.js, Python">
+<label>Notas / why you</label><textarea id="notes" rows="2"></textarea>
+<div style="margin-top:12px"><button>Guardar y sumar</button></div></form></details>
+
+<div class="h2"><small style="margin:0">Postulaciones (<span id="total">0</span>)</small>
+<select id="flt" style="width:auto;padding:6px"><option value="">Todas</option><option>Sent</option><option>Replied</option><option>Interview</option><option>Offer</option><option>Rejected</option><option>Ghosted</option></select></div>
+<input id="q" placeholder="Buscar empresa o puesto" style="margin-bottom:10px">
+<div id="list"></div>
+
+<div class="h2"><small style="margin:0">Datos</small></div>
+<div class="acts"><button class="alt sm" id="xCsv">Exportar CSV</button><button class="alt sm" id="xJson">Exportar applications.json</button><button class="alt sm" id="bk">Backup</button><button class="alt sm" id="rs">Restaurar</button></div>
+<small style="text-transform:none;letter-spacing:0;font-size:11px;line-height:16px;margin-top:10px">Los datos se guardan en este navegador. Hacé un Backup de vez en cuando y guardalo en tu Drive o mandátelo por mail.</small>
+<input type="file" id="file" accept=".json" style="display:none"><div id="msg"></div>
+
+<script>
+const $=id=>document.getElementById(id),KEY="ig_tracker_v1",GOAL=15,FOLLOW=6;
+const CH={easy:"Easy Apply",email:"Email HR",startup:"Startup"},ST=["Sent","Replied","Interview","Offer","Rejected","Ghosted"];
+const iso=d=>d.toLocaleDateString("en-CA"),today=()=>iso(new Date()),addDays=(s,n)=>{const d=new Date(s+"T12:00:00");d.setDate(d.getDate()+n);return iso(d)};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const demo=location.hash==="#demo";
+let apps=[];
+try{apps=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){apps=[]}
+if(demo){const t=today();apps=[
+{id:"1",company:"Acme AI",role:"Senior AI Engineer",channel:"easy",cv:"Fullstack",link:"https://example.com",contact:"Sarah",contact_email:"",stack:"Python, React",notes:"",status:"Sent",date:t,follow:addDays(t,FOLLOW)},
+{id:"2",company:"Northwind",role:"Backend Engineer",channel:"email",cv:"Backend",link:"",contact:"Luis",contact_email:"luis@northwind.io",stack:"Node.js",notes:"",status:"Sent",date:addDays(t,-7),follow:addDays(t,-1)},
+{id:"3",company:"Lumen",role:"Frontend Engineer",channel:"startup",cv:"Frontend",link:"",contact:"",contact_email:"",stack:"React, Three.js",notes:"",status:"Interview",date:addDays(t,-3),follow:addDays(t,3)}]}
+const save=()=>{if(!demo)localStorage.setItem(KEY,JSON.stringify(apps))};
+const say=m=>{const e=$("msg");e.textContent=m;e.style.display="block";setTimeout(()=>e.style.display="none",2200)};
+const slug=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const link=a=>{const p=new URLSearchParams({company:a.company,role:a.role,first_name:(a.contact||"").split(" ")[0],stack:a.stack||"",why_you:a.notes||""});return "index.html?"+p};
+
+function card(a,due){
+ const o=ST.map(s=>`<option ${s===a.status?"selected":""}>${s}</option>`).join("");
+ return `<div class="item ${due?"due":""}"><h3>${esc(a.company)} — ${esc(a.role)}</h3>
+ <div class="meta"><span class="tag">${CH[a.channel]||""}</span><span class="tag">${esc(a.cv)}</span>${esc(a.date)} · follow-up ${esc(a.follow||"-")}${a.contact?" · "+esc(a.contact):""}</div>
+ ${a.notes?`<div class="meta">${esc(a.notes)}</div>`:""}
+ <div class="acts"><select data-st="${a.id}">${o}</select>
+ ${a.link?`<a class="btn alt sm" href="${esc(a.link)}" target="_blank" rel="noopener">Oferta</a>`:""}
+ <a class="btn alt sm" href="${esc(link(a))}">Email</a>
+ ${due?`<button class="sm" data-fu="${a.id}">Follow-up hecho</button>`:""}
+ <button class="alt sm" data-del="${a.id}">Borrar</button></div></div>`}
+
+function render(){
+ const t=today(),td=apps.filter(a=>a.date===t);
+ $("today").textContent=t;$("goal").textContent=GOAL;$("cnt").textContent=td.length;
+ $("fill").style.width=Math.min(100,td.length/GOAL*100)+"%";
+ $("blocks").innerHTML=[["easy","30 min"],["email","30 min"],["startup","15 min"]].map(([k,m])=>`<div class="blk"><b>${td.filter(a=>a.channel===k).length}</b><small>${CH[k]} · ${m}</small></div>`).join("");
+ const due=apps.filter(a=>a.status==="Sent"&&a.follow&&a.follow<=t);
+ $("dueWrap").style.display=due.length?"block":"none";$("due").innerHTML=due.map(a=>card(a,true)).join("");
+ const f=$("flt").value,q=$("q").value.toLowerCase();
+ const l=apps.filter(a=>(!f||a.status===f)&&(!q||(a.company+" "+a.role).toLowerCase().includes(q))).sort((x,y)=>y.date.localeCompare(x.date));
+ $("total").textContent=apps.length;
+ $("list").innerHTML=l.length?l.map(a=>card(a,false)).join(""):'<div class="empty">Todavía no hay postulaciones. Cargá la primera arriba.</div>'}
+
+$("f").onsubmit=e=>{e.preventDefault();const t=today(),v=id=>$(id).value.trim();
+ apps.push({id:Date.now().toString(36),company:v("company"),role:v("role"),channel:$("channel").value,cv:$("cv").value,link:v("link"),contact:v("contact"),contact_email:v("contact_email"),stack:v("stack"),notes:v("notes"),status:"Sent",date:t,follow:addDays(t,FOLLOW)});
+ save();["company","role","link","contact","contact_email","stack","notes"].forEach(i=>$(i).value="");$("company").focus();render();say("Sumada: "+apps.length+" en total")};
+document.addEventListener("change",e=>{const id=e.target.dataset.st;if(id){apps.find(a=>a.id===id).status=e.target.value;save();render()}});
+document.addEventListener("click",e=>{const d=e.target.dataset;
+ if(d.del&&confirm("¿Borrar esta postulación?")){apps=apps.filter(a=>a.id!==d.del);save();render()}
+ if(d.fu){const a=apps.find(x=>x.id===d.fu);a.follow=addDays(today(),FOLLOW);save();render();say("Próximo follow-up en "+FOLLOW+" días")}});
+$("flt").onchange=render;$("q").oninput=render;
+
+const dl=(n,txt,type)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=n;a.click()};
+$("xCsv").onclick=()=>{const c=["date","company","role","channel","cv","status","follow","contact","contact_email","link","stack","notes"];
+ dl("applications.csv",[c.join(",")].concat(apps.map(a=>c.map(k=>'"'+String(a[k]??"").replace(/"/g,'""')+'"').join(","))).join("\n"),"text/csv")};
+$("xJson").onclick=()=>dl("applications.json",JSON.stringify(apps.map(a=>({slug:slug(a.company+"-"+a.role),company:a.company,role:a.role,first_name:(a.contact||"").split(" ")[0]||"there",stack:a.stack||"",why_you:a.notes||""})),null,2),"application/json");
+$("bk").onclick=()=>dl("tracker-backup-"+today()+".json",JSON.stringify(apps,null,2),"application/json");
+$("rs").onclick=()=>$("file").click();
+$("file").onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;apps=d;save();render();say("Restaurado: "+d.length)}catch(x){say("Archivo inválido")}};r.readAsText(e.target.files[0])};
+render();
+</script></body></html>
